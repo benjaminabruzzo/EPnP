@@ -22,13 +22,17 @@
 
 clear all; close all;
 
-addpath data;
-addpath error;
-addpath EPnP;
+try 
+    addpath data; 
+    addpath error;
+    addpath EPnP; 
+catch
+    addpath('/media/benjamin/Reverie/reverie/epnp/matlab')
+end
 
 
 fprintf('\n---------EPnP--------------\n');
-%1.-Generate simulated input data------------------------------------------
+%% 1.-Generate simulated input data------------------------------------------
 load_points=0;
 if ~load_points
     n=50; %number of points
@@ -41,7 +45,7 @@ else
     draw_noisy_input_data(point);
 end
 
-%2.-Inputs format--------------------------------
+%% 2.-Inputs format--------------------------------
 x3d=zeros(n,4);
 x2d=zeros(n,3); 
 A=A(:,1:3);
@@ -55,7 +59,7 @@ for i=1:n
 end
 
 
-%3.-EPnP----------------------------------------------------
+%% 3.-EPnP----------------------------------------------------
 Xw=x3d_h(:,1:3);
 U=x2d_h(:,1:2);
 
@@ -74,20 +78,20 @@ error=reprojection_error_usingRT(Xw,U,Rp,Tp,A);
 fprintf('error EPnP: %.3f\n',error);
 
 
-%3.-EPnP_GAUSS_NEWTON----------------------------------------------------
+%% 3.-EPnP_GAUSS_NEWTON----------------------------------------------------
 Xw=x3d_h(:,1:3);
 U=x2d_h(:,1:2);
 
 [Rp,Tp,Xc,sol]=efficient_pnp_gauss(x3d_h,x2d_h,A);
 
-%draw Results
+%% draw Results
 for i=1:n
     point(i).Xcam_est=Xc(i,:)';
 end
 figure; h=gcf;
 plot_3d_reconstruction(point,'EPnP Gauss Newton',h);
 
-%compute error
+%% compute error
 error=reprojection_error_usingRT(Xw,U,Rp,Tp,A);
 fprintf('error EPnP_Gauss_Newton: %.3f\n',error);
 xlim([-2 2]); ylim([-2 2]);

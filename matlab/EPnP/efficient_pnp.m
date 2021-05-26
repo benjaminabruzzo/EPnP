@@ -1,6 +1,6 @@
-function [R,T,Xc,best_solution]=efficient_pnp(x3d_h,x2d_h,A)
+function [R,T,Xc,all_solutions, best_solution]=efficient_pnp(x3d_h,x2d_h,A)
 
-% EFFICIENT_PNP Main Function to solve the PnP problem 
+%% EFFICIENT_PNP Main Function to solve the PnP problem 
 %       as described in:
 %
 %       Francesc Moreno-Noguer, Vincent Lepetit, Pascal Fua.
@@ -35,15 +35,12 @@ Xw=x3d_h(:,1:3);
 U=x2d_h(:,1:2);
 
 THRESHOLD_REPROJECTION_ERROR=20;%error in degrees of the basis formed by the control points. 
-%If we have a larger error, we will compute the solution using a larger
-%number of vectors in the kernel
+%If we have a larger error, we will compute the solution using a larger number of vectors in the kernel
 
-%define control points in a world coordinate system (centered on the 3d
-%points centroid)
+%define control points in a world coordinate system (centered on the 3d points centroid)
 Cw=define_control_points();
 
-%compute alphas (linear combination of the control points to represent the 3d
-%points)
+%compute alphas (linear combination of the control points to represent the 3d points)
 Alph=compute_alphas(Xw,Cw);
 
 %Compute M
@@ -53,7 +50,7 @@ M=compute_M_ver2(U,Alph,A);
 Km=kernel_noise(M,4); %in matlab we have directly the funcion km=null(M);
     
 
-
+%%
 %1.-Solve assuming dim(ker(M))=1. X=[Km_end];------------------------------
 dim_kerM=1;
 X1=Km(:,end);
@@ -172,6 +169,8 @@ end
 Xc=sol(best_solution).Xc;
 R=sol(best_solution).R;
 T=sol(best_solution).T;
+
+all_solutions = sol;
 
 
 
